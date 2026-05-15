@@ -12,6 +12,7 @@
       --muted: #667085;
       --line: #e6eaf0;
       --accent: #2563eb;
+      --accent2: #7c3aed;
       --ok: #16a34a;
       --warn: #d97706;
     }
@@ -19,52 +20,51 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: radial-gradient(circle at top left, #dbeafe 0, transparent 36%), var(--bg);
+      background: radial-gradient(circle at top left, #dbeafe 0, transparent 36%), radial-gradient(circle at top right, #ede9fe 0, transparent 34%), var(--bg);
       color: var(--text);
       line-height: 1.65;
     }
-    .shell {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 48px 20px 72px;
-    }
+    .shell { max-width: 1040px; margin: 0 auto; padding: 48px 20px 72px; }
     .hero {
-      background: linear-gradient(135deg, #111827, #1d4ed8);
+      background: linear-gradient(135deg, #111827, #1d4ed8 58%, #7c3aed);
       color: white;
       border-radius: 28px;
-      padding: 36px;
+      padding: 38px;
       box-shadow: 0 24px 70px rgba(15, 23, 42, .22);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -90px;
+      top: -90px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
     }
     .hero h1 {
+      position: relative;
       margin: 0 0 12px;
       font-size: clamp(30px, 5vw, 56px);
       letter-spacing: -.04em;
       line-height: 1.05;
     }
-    .hero p {
-      margin: 0;
-      max-width: 720px;
-      color: rgba(255,255,255,.82);
-      font-size: 18px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 20px;
-    }
+    .hero p { position: relative; margin: 0; max-width: 760px; color: rgba(255,255,255,.84); font-size: 18px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; position: relative; }
+    .pill { border: 1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.12); color: white; border-radius: 999px; padding: 8px 12px; font-weight: 700; font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
     .card {
-      background: rgba(255,255,255,.86);
+      background: rgba(255,255,255,.88);
       backdrop-filter: blur(12px);
       border: 1px solid var(--line);
       border-radius: 22px;
       padding: 22px;
       box-shadow: 0 14px 36px rgba(15, 23, 42, .08);
     }
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 18px;
-    }
+    .card h2 { margin: 0 0 10px; font-size: 18px; }
+    .card p { margin: 0; color: #475467; }
     .badge {
       display: inline-flex;
       align-items: center;
@@ -77,14 +77,8 @@
       color: #067647;
       margin-bottom: 12px;
     }
-    .badge.warn {
-      background: #fffaeb;
-      color: #b54708;
-    }
-    .badge.info {
-      background: #eff6ff;
-      color: #1d4ed8;
-    }
+    .badge.warn { background: #fffaeb; color: #b54708; }
+    .badge.info { background: #eff6ff; color: #1d4ed8; }
     .panel {
       margin-top: 20px;
       background: var(--card);
@@ -93,17 +87,8 @@
       padding: 24px;
       box-shadow: 0 14px 36px rgba(15, 23, 42, .06);
     }
-    .panel h2 {
-      margin: 0 0 14px;
-      font-size: 22px;
-    }
-    .steps {
-      display: grid;
-      gap: 12px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
+    .panel h2 { margin: 0 0 14px; font-size: 22px; }
+    .steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
     .steps li {
       display: flex;
       gap: 12px;
@@ -124,6 +109,7 @@
       font-size: 13px;
       font-weight: 800;
     }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
     button {
       border: 0;
       border-radius: 12px;
@@ -134,6 +120,7 @@
       cursor: pointer;
       box-shadow: 0 10px 22px rgba(37, 99, 235, .22);
     }
+    button.secondary { background: #111827; box-shadow: 0 10px 22px rgba(17,24,39,.18); }
     button:active { transform: translateY(1px); }
     .output {
       margin-top: 12px;
@@ -145,6 +132,7 @@
       font-size: 13px;
       word-break: break-all;
     }
+    .hidden { display: none; }
     @media (max-width: 760px) {
       .grid { grid-template-columns: 1fr; }
       .hero { padding: 28px; border-radius: 22px; }
@@ -155,51 +143,62 @@
 <body>
   <main class="shell">
     <section class="hero">
-      <h1>HTML 文档预览测试页</h1>
-      <p>这是一个由 ChatGPT 生成的单文件 HTML。它内联 CSS 和 JavaScript，不依赖 CDN、不需要 npm、不需要 webserver，下载后可以直接双击打开。</p>
+      <h1>GitHub Pages HTML 预览测试成功</h1>
+      <p>这是 ChatGPT 通过 GitHub 连接器更新的单文件 HTML。它适合作为一次性报告、审计面板、策略分析页和可分享的在线预览页。</p>
+      <div class="meta">
+        <span class="pill">仓库：HisenWeb/html-preview</span>
+        <span class="pill">路径：docs/index.html</span>
+        <span class="pill">方式：update_file</span>
+      </div>
     </section>
 
     <section class="grid">
       <article class="card">
-        <div class="badge">可直接打开</div>
-        <h2>单文件交付</h2>
-        <p>适合一次性报告、审计面板、方案收敛、阶段复核等人类阅读场景。</p>
+        <div class="badge">本地可读</div>
+        <h2>单文件 HTML</h2>
+        <p>报告可以下载后双击打开，不依赖 npm、Vite、后端服务或外部 CDN。</p>
       </article>
       <article class="card">
-        <div class="badge info">GitHub Pages 友好</div>
-        <h2>可在线预览</h2>
-        <p>放到仓库的 <strong>docs/index.html</strong> 后，可以通过 GitHub Pages 发布为网页。</p>
+        <div class="badge info">在线可分享</div>
+        <h2>GitHub Pages</h2>
+        <p>放在 <strong>docs/index.html</strong> 后，可以通过 GitHub Pages 发布给别人看。</p>
       </article>
       <article class="card">
-        <div class="badge warn">非长期源文件</div>
-        <h2>不替代 Markdown</h2>
-        <p>HTML 适合最终审阅，长期规则、Prompt、机器协议仍建议用 Markdown / JSON。</p>
+        <div class="badge warn">静态交互</div>
+        <h2>复杂前端交互</h2>
+        <p>可以做搜索、筛选、折叠、图表和多页导航；但不适合私密 API Key 或数据库写入。</p>
       </article>
     </section>
 
     <section class="panel">
-      <h2>推荐发布流程</h2>
+      <h2>后续推荐用法</h2>
       <ol class="steps">
-        <li><span class="num">1</span><span>创建或授权一个 GitHub 仓库，例如 <strong>html-preview</strong>。</span></li>
-        <li><span class="num">2</span><span>把这个文件提交到 <strong>docs/index.html</strong>。</span></li>
-        <li><span class="num">3</span><span>在仓库 Settings → Pages 中选择 <strong>Deploy from a branch</strong>，目录选择 <strong>/docs</strong>。</span></li>
-        <li><span class="num">4</span><span>之后就能得到一个在线预览链接。</span></li>
+        <li><span class="num">1</span><span>普通一次性审阅：我直接生成单文件 HTML，你在 ChatGPT 里打开。</span></li>
+        <li><span class="num">2</span><span>需要分享或长期在线：我更新到 <strong>HisenWeb/html-preview</strong> 的 <strong>docs/</strong> 目录。</span></li>
+        <li><span class="num">3</span><span>多个报告：用 <strong>docs/reports/*.html</strong> 存报告，再维护一个目录页。</span></li>
+        <li><span class="num">4</span><span>复杂交互：仍然保持静态前端，数据内联或放 JSON 文件，避免后端依赖。</span></li>
       </ol>
     </section>
 
     <section class="panel">
       <h2>交互测试</h2>
-      <p>点击按钮，确认本文件的内联 JavaScript 正常工作。</p>
-      <button id="testBtn">运行测试</button>
+      <p>点击按钮，确认在线 HTML 的内联 JavaScript 正常工作。</p>
+      <div class="toolbar">
+        <button id="testBtn">运行测试</button>
+        <button class="secondary" id="toggleBtn">展开/收起说明</button>
+      </div>
       <div class="output" id="output">等待测试...</div>
+      <div class="output hidden" id="details">说明：这个页面是静态 HTML，但仍然可以包含 CSS、JavaScript、搜索、筛选、折叠、图表等前端交互。</div>
     </section>
   </main>
 
   <script>
     document.getElementById('testBtn').addEventListener('click', function () {
       const now = new Date().toLocaleString('zh-CN');
-      document.getElementById('output').textContent =
-        'PASS: 单文件 HTML 已正常运行。测试时间：' + now;
+      document.getElementById('output').textContent = 'PASS: GitHub Pages 单文件 HTML 已正常运行。测试时间：' + now;
+    });
+    document.getElementById('toggleBtn').addEventListener('click', function () {
+      document.getElementById('details').classList.toggle('hidden');
     });
   </script>
 </body>
