@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChatGPT HTML Preview Test</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #e6eaf0;
+      --accent: #2563eb;
+      --ok: #16a34a;
+      --warn: #d97706;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top left, #dbeafe 0, transparent 36%), var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 20px 72px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #111827, #1d4ed8);
+      color: white;
+      border-radius: 28px;
+      padding: 36px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, .22);
+    }
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(30px, 5vw, 56px);
+      letter-spacing: -.04em;
+      line-height: 1.05;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 720px;
+      color: rgba(255,255,255,.82);
+      font-size: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,.86);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 14px 36px rgba(15, 23, 42, .08);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      background: #ecfdf3;
+      color: #067647;
+      margin-bottom: 12px;
+    }
+    .badge.warn {
+      background: #fffaeb;
+      color: #b54708;
+    }
+    .badge.info {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .panel {
+      margin-top: 20px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 14px 36px rgba(15, 23, 42, .06);
+    }
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+    }
+    .steps {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .steps li {
+      display: flex;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfcfe;
+    }
+    .num {
+      flex: 0 0 auto;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 16px;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, .22);
+    }
+    button:active { transform: translateY(1px); }
+    .output {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #f1f5f9;
+      color: #334155;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      word-break: break-all;
+    }
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero { padding: 28px; border-radius: 22px; }
+      .shell { padding-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>HTML 文档预览测试页</h1>
+      <p>这是一个由 ChatGPT 生成的单文件 HTML。它内联 CSS 和 JavaScript，不依赖 CDN、不需要 npm、不需要 webserver，下载后可以直接双击打开。</p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="badge">可直接打开</div>
+        <h2>单文件交付</h2>
+        <p>适合一次性报告、审计面板、方案收敛、阶段复核等人类阅读场景。</p>
+      </article>
+      <article class="card">
+        <div class="badge info">GitHub Pages 友好</div>
+        <h2>可在线预览</h2>
+        <p>放到仓库的 <strong>docs/index.html</strong> 后，可以通过 GitHub Pages 发布为网页。</p>
+      </article>
+      <article class="card">
+        <div class="badge warn">非长期源文件</div>
+        <h2>不替代 Markdown</h2>
+        <p>HTML 适合最终审阅，长期规则、Prompt、机器协议仍建议用 Markdown / JSON。</p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>推荐发布流程</h2>
+      <ol class="steps">
+        <li><span class="num">1</span><span>创建或授权一个 GitHub 仓库，例如 <strong>html-preview</strong>。</span></li>
+        <li><span class="num">2</span><span>把这个文件提交到 <strong>docs/index.html</strong>。</span></li>
+        <li><span class="num">3</span><span>在仓库 Settings → Pages 中选择 <strong>Deploy from a branch</strong>，目录选择 <strong>/docs</strong>。</span></li>
+        <li><span class="num">4</span><span>之后就能得到一个在线预览链接。</span></li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2>交互测试</h2>
+      <p>点击按钮，确认本文件的内联 JavaScript 正常工作。</p>
+      <button id="testBtn">运行测试</button>
+      <div class="output" id="output">等待测试...</div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('testBtn').addEventListener('click', function () {
+      const now = new Date().toLocaleString('zh-CN');
+      document.getElementById('output').textContent =
+        'PASS: 单文件 HTML 已正常运行。测试时间：' + now;
+    });
+  </script>
+</body>
+</html>
