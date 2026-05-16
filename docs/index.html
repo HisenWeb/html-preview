@@ -3,203 +3,350 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChatGPT HTML Preview Test</title>
+  <title>ChatGPT 自定义 MCP / 本地私有项目网关方案</title>
+  <meta name="description" content="把 ChatGPT 接入本地私有仓库的安全 MCP 网关方案：只读审计、受控命令、diff/test 证据、逐步开放写入。" />
   <style>
     :root {
-      --bg: #f6f8fb;
-      --card: #ffffff;
-      --text: #172033;
-      --muted: #667085;
-      --line: #e6eaf0;
-      --accent: #2563eb;
-      --accent2: #7c3aed;
-      --ok: #16a34a;
-      --warn: #d97706;
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --line: #334155;
+      --accent: #60a5fa;
+      --accent2: #34d399;
+      --warn: #fbbf24;
+      --danger: #fb7185;
+      --code: #020617;
+      --shadow: 0 24px 80px rgba(0,0,0,.35);
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: radial-gradient(circle at top left, #dbeafe 0, transparent 36%), radial-gradient(circle at top right, #ede9fe 0, transparent 34%), var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "Microsoft YaHei", sans-serif;
       color: var(--text);
-      line-height: 1.65;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(96,165,250,.25), transparent 28%),
+        radial-gradient(circle at 85% 0%, rgba(52,211,153,.18), transparent 32%),
+        linear-gradient(180deg, #020617 0%, var(--bg) 42%, #020617 100%);
+      line-height: 1.7;
     }
-    .shell { max-width: 1040px; margin: 0 auto; padding: 48px 20px 72px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(1120px, calc(100% - 36px)); margin: 0 auto; }
+    header { padding: 72px 0 36px; }
     .hero {
-      background: linear-gradient(135deg, #111827, #1d4ed8 58%, #7c3aed);
-      color: white;
+      padding: 42px;
+      border: 1px solid rgba(148,163,184,.24);
       border-radius: 28px;
-      padding: 38px;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, .22);
-      position: relative;
-      overflow: hidden;
+      background: rgba(15,23,42,.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
     }
-    .hero::after {
-      content: "";
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      right: -90px;
-      top: -90px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.14);
+    .eyebrow { color: var(--accent2); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; }
+    h1 { margin: 12px 0 18px; font-size: clamp(34px, 5vw, 64px); line-height: 1.08; letter-spacing: -0.04em; }
+    .lead { max-width: 880px; font-size: 20px; color: #cbd5e1; margin: 0; }
+    .hero-code {
+      margin-top: 28px;
+      padding: 18px 20px;
+      border: 1px solid rgba(96,165,250,.25);
+      border-radius: 18px;
+      background: rgba(2,6,23,.78);
+      color: #bfdbfe;
+      overflow-x: auto;
+      white-space: pre;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
     }
-    .hero h1 {
-      position: relative;
-      margin: 0 0 12px;
-      font-size: clamp(30px, 5vw, 56px);
-      letter-spacing: -.04em;
-      line-height: 1.05;
-    }
-    .hero p { position: relative; margin: 0; max-width: 760px; color: rgba(255,255,255,.84); font-size: 18px; }
-    .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; position: relative; }
-    .pill { border: 1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.12); color: white; border-radius: 999px; padding: 8px 12px; font-weight: 700; font-size: 13px; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
-    .card {
-      background: rgba(255,255,255,.88);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 22px;
-      box-shadow: 0 14px 36px rgba(15, 23, 42, .08);
-    }
-    .card h2 { margin: 0 0 10px; font-size: 18px; }
-    .card p { margin: 0; color: #475467; }
-    .badge {
+    nav { margin: 20px 0 0; display: flex; gap: 10px; flex-wrap: wrap; }
+    nav a {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 7px 11px;
+      padding: 9px 13px;
+      border: 1px solid rgba(148,163,184,.24);
       border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      background: #ecfdf3;
-      color: #067647;
-      margin-bottom: 12px;
+      color: #dbeafe;
+      background: rgba(15,23,42,.56);
     }
-    .badge.warn { background: #fffaeb; color: #b54708; }
-    .badge.info { background: #eff6ff; color: #1d4ed8; }
-    .panel {
-      margin-top: 20px;
-      background: var(--card);
-      border: 1px solid var(--line);
+    main { padding: 8px 0 80px; }
+    section {
+      margin-top: 22px;
+      padding: 30px;
+      border: 1px solid rgba(148,163,184,.18);
       border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 14px 36px rgba(15, 23, 42, .06);
+      background: rgba(17,24,39,.74);
+      box-shadow: 0 18px 54px rgba(0,0,0,.22);
     }
-    .panel h2 { margin: 0 0 14px; font-size: 22px; }
-    .steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
-    .steps li {
-      display: flex;
-      gap: 12px;
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #fbfcfe;
+    h2 { margin: 0 0 14px; font-size: 30px; letter-spacing: -0.02em; }
+    h3 { margin: 24px 0 10px; font-size: 21px; }
+    p { margin: 10px 0; color: #d1d5db; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .card {
+      grid-column: span 6;
+      padding: 20px;
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: 18px;
+      background: rgba(31,41,55,.72);
     }
-    .num {
-      flex: 0 0 auto;
-      width: 28px;
-      height: 28px;
+    .card.full { grid-column: 1 / -1; }
+    .card.third { grid-column: span 4; }
+    .badge {
+      display: inline-flex;
+      padding: 4px 9px;
       border-radius: 999px;
+      background: rgba(96,165,250,.14);
+      color: #bfdbfe;
+      border: 1px solid rgba(96,165,250,.22);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    ul { margin: 10px 0 0; padding-left: 20px; color: #d1d5db; }
+    li { margin: 7px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; overflow: hidden; border-radius: 14px; }
+    th, td { padding: 13px 14px; border-bottom: 1px solid rgba(148,163,184,.18); vertical-align: top; }
+    th { text-align: left; color: #e0f2fe; background: rgba(15,23,42,.74); }
+    td { color: #d1d5db; background: rgba(2,6,23,.25); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    code { color: #bfdbfe; background: rgba(2,6,23,.72); padding: 2px 6px; border-radius: 7px; }
+    pre {
+      margin: 14px 0 0;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,.18);
+      background: var(--code);
+      color: #dbeafe;
+      overflow-x: auto;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .callout {
+      border-left: 4px solid var(--accent2);
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(52,211,153,.10);
+      color: #d1fae5;
+      margin: 16px 0;
+    }
+    .warn { border-left-color: var(--warn); background: rgba(251,191,36,.10); color: #fef3c7; }
+    .danger { border-left-color: var(--danger); background: rgba(251,113,133,.10); color: #ffe4e6; }
+    .steps { counter-reset: step; display: grid; gap: 14px; }
+    .step {
+      position: relative;
+      padding: 18px 18px 18px 58px;
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: 18px;
+      background: rgba(31,41,55,.6);
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
       display: grid;
       place-items: center;
-      background: var(--accent);
-      color: white;
-      font-size: 13px;
-      font-weight: 800;
+      background: rgba(96,165,250,.2);
+      color: #bfdbfe;
+      font-weight: 900;
     }
-    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-    button {
-      border: 0;
-      border-radius: 12px;
-      padding: 11px 16px;
-      background: var(--accent);
-      color: white;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 10px 22px rgba(37, 99, 235, .22);
-    }
-    button.secondary { background: #111827; box-shadow: 0 10px 22px rgba(17,24,39,.18); }
-    button:active { transform: translateY(1px); }
-    .output {
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 14px;
-      background: #f1f5f9;
-      color: #334155;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 13px;
-      word-break: break-all;
-    }
-    .hidden { display: none; }
-    @media (max-width: 760px) {
-      .grid { grid-template-columns: 1fr; }
-      .hero { padding: 28px; border-radius: 22px; }
-      .shell { padding-top: 28px; }
+    footer { color: var(--muted); padding: 36px 0 70px; text-align: center; }
+    @media (max-width: 820px) {
+      .hero { padding: 26px; }
+      section { padding: 22px; }
+      .card, .card.third { grid-column: 1 / -1; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
     }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <section class="hero">
-      <h1>GitHub Pages HTML 预览测试成功</h1>
-      <p>这是 ChatGPT 通过 GitHub 连接器更新的单文件 HTML。它适合作为一次性报告、审计面板、策略分析页和可分享的在线预览页。</p>
-      <div class="meta">
-        <span class="pill">仓库：HisenWeb/html-preview</span>
-        <span class="pill">路径：docs/index.html</span>
-        <span class="pill">方式：update_file</span>
+  <header class="wrap">
+    <div class="hero">
+      <div class="eyebrow">Local MCP Gateway · 私有项目安全接入方案</div>
+      <h1>把 ChatGPT 接到你的本地私有仓库，而不是把生产代码公开。</h1>
+      <p class="lead">目标不是做一个炫技 App，而是做一个只给自己用的本地 MCP 网关：让我能安全读取项目、查看 diff、跑受控命令、生成证据报告；源码仍留在你的电脑和私有仓库里。</p>
+      <div class="hero-code">ChatGPT → 自定义 MCP Server → 本地私有项目 / Git / 测试命令 / 报告输出</div>
+      <nav>
+        <a href="#why">为什么要做</a>
+        <a href="#mvp">MVP 工具</a>
+        <a href="#security">安全边界</a>
+        <a href="#roadmap">阶段路线</a>
+        <a href="#usage">使用场景</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="why">
+      <h2>一、核心判断</h2>
+      <div class="callout"><strong>生产代码不要为了让我能写 GitHub 而放到公有仓库。</strong>更合理的路线是：公有 GitHub 放 demo / HTML 报告 / 脱敏材料；真实生产项目通过本地 MCP 网关安全接入。</div>
+      <div class="grid">
+        <div class="card">
+          <span class="badge">GitHub 模式</span>
+          <h3>适合公开工作台</h3>
+          <ul>
+            <li>公有 demo 仓库</li>
+            <li>HTML 展示页</li>
+            <li>Prompt / agent 配置模板</li>
+            <li>issue、PR、review、Actions 流程</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="badge">本地 MCP 模式</span>
+          <h3>适合私有生产项目</h3>
+          <ul>
+            <li>读取本地项目结构和关键文件</li>
+            <li>查看 git status / git diff</li>
+            <li>运行白名单命令，例如测试和类型检查</li>
+            <li>生成 patch、审计报告、阶段证据</li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <section class="grid">
-      <article class="card">
-        <div class="badge">本地可读</div>
-        <h2>单文件 HTML</h2>
-        <p>报告可以下载后双击打开，不依赖 npm、Vite、后端服务或外部 CDN。</p>
-      </article>
-      <article class="card">
-        <div class="badge info">在线可分享</div>
-        <h2>GitHub Pages</h2>
-        <p>放在 <strong>docs/index.html</strong> 后，可以通过 GitHub Pages 发布给别人看。</p>
-      </article>
-      <article class="card">
-        <div class="badge warn">静态交互</div>
-        <h2>复杂前端交互</h2>
-        <p>可以做搜索、筛选、折叠、图表和多页导航；但不适合私密 API Key 或数据库写入。</p>
-      </article>
+    <section id="architecture">
+      <h2>二、一句话架构</h2>
+      <pre>ChatGPT
+  ↓ 调用工具
+你的 MCP Server
+  ↓ 受控访问
+本地私有仓库 / 脚本 / Git / 测试命令 / 文档生成</pre>
+      <p>GitHub 工具是 OpenAI 已经帮你做好的远程开发工作台；自定义 MCP 是你自己定义“我可以调用哪些本地工具”。真正的价值是：<strong>代码不用公开，但我仍然可以基于受控证据做分析、复核和阶段裁决。</strong></p>
     </section>
 
-    <section class="panel">
-      <h2>后续推荐用法</h2>
-      <ol class="steps">
-        <li><span class="num">1</span><span>普通一次性审阅：我直接生成单文件 HTML，你在 ChatGPT 里打开。</span></li>
-        <li><span class="num">2</span><span>需要分享或长期在线：我更新到 <strong>HisenWeb/html-preview</strong> 的 <strong>docs/</strong> 目录。</span></li>
-        <li><span class="num">3</span><span>多个报告：用 <strong>docs/reports/*.html</strong> 存报告，再维护一个目录页。</span></li>
-        <li><span class="num">4</span><span>复杂交互：仍然保持静态前端，数据内联或放 JSON 文件，避免后端依赖。</span></li>
-      </ol>
+    <section id="mvp">
+      <h2>三、第一版 MVP：本地项目只读审计网关</h2>
+      <p>第一版不要做全能执行器。先做只读和低风险证据工具，跑通后再逐步开放写入能力。</p>
+      <table>
+        <thead><tr><th>工具</th><th>作用</th><th>风险</th></tr></thead>
+        <tbody>
+          <tr><td><code>list_projects</code></td><td>列出允许访问的项目目录</td><td>低</td></tr>
+          <tr><td><code>get_project_tree</code></td><td>返回目录结构，过滤 <code>node_modules</code>、<code>dist</code>、<code>.git</code></td><td>低</td></tr>
+          <tr><td><code>read_file</code></td><td>读取白名单项目内的指定文件</td><td>中</td></tr>
+          <tr><td><code>search_files</code></td><td>在项目中搜索关键词、函数名、错误信息</td><td>中</td></tr>
+          <tr><td><code>git_status</code></td><td>查看工作区状态</td><td>低</td></tr>
+          <tr><td><code>git_diff</code></td><td>查看当前变更 diff</td><td>低</td></tr>
+        </tbody>
+      </table>
+      <div class="warn callout">第一版不要开放 <code>write_file</code>、<code>delete_file</code>、<code>git push</code>、<code>git commit</code>、<code>npm install</code>、任意 shell 命令、读取整盘文件、读取 <code>.env</code> 或 SSH key。</div>
     </section>
 
-    <section class="panel">
-      <h2>交互测试</h2>
-      <p>点击按钮，确认在线 HTML 的内联 JavaScript 正常工作。</p>
-      <div class="toolbar">
-        <button id="testBtn">运行测试</button>
-        <button class="secondary" id="toggleBtn">展开/收起说明</button>
+    <section id="structure">
+      <h2>四、建议项目结构</h2>
+      <pre>local-project-gateway/
+├─ src/
+│  ├─ index.ts
+│  ├─ tools/
+│  │  ├─ list-projects.ts
+│  │  ├─ get-project-tree.ts
+│  │  ├─ read-file.ts
+│  │  ├─ search-files.ts
+│  │  ├─ git-status.ts
+│  │  └─ git-diff.ts
+│  ├─ security/
+│  │  ├─ path-guard.ts
+│  │  └─ command-allowlist.ts
+│  └─ config.ts
+├─ allowed-projects.json
+└─ package.json</pre>
+      <h3>白名单配置示例</h3>
+      <pre>{
+  "projects": [
+    { "id": "wx-mst", "root": "D:/WX_MST" },
+    { "id": "spplus-test", "root": "D:/spplus-agent-test" }
+  ],
+  "blockedPatterns": [
+    ".env",
+    ".env.*",
+    "node_modules",
+    ".git",
+    "dist",
+    "build",
+    "*.pem",
+    "*.key",
+    "id_rsa",
+    "secrets.*"
+  ]
+}</pre>
+      <p>工具调用时只允许传 <code>project_id</code> 和项目内相对路径，不允许直接传 <code>C:/Users/...</code>、<code>D:/...</code> 这种任意绝对路径。</p>
+    </section>
+
+    <section id="security">
+      <h2>五、安全边界：不要做任意命令执行器</h2>
+      <div class="danger callout">最危险的设计是 <code>run_command(command: string)</code>。这等于把你的电脑命令行暴露给模型，不能这么做。</div>
+      <p>正确方式是做白名单命令：</p>
+      <pre>run_safe_command(project_id, command_id)</pre>
+      <p>其中 <code>command_id</code> 只能是服务端预设值：</p>
+      <pre>const commands = {
+  typecheck: "npm run typecheck",
+  test: "npm test",
+  lint: "npm run lint",
+  build: "npm run build"
+};</pre>
+      <div class="grid">
+        <div class="card third"><h3>路径防护</h3><ul><li>只允许白名单项目</li><li>禁止路径穿越</li><li>禁止读敏感文件</li></ul></div>
+        <div class="card third"><h3>命令防护</h3><ul><li>不接受任意命令字符串</li><li>只跑预设命令</li><li>限制超时时间和输出大小</li></ul></div>
+        <div class="card third"><h3>写入防护</h3><ul><li>先只读</li><li>后续只写报告目录</li><li>源码改动必须人工确认</li></ul></div>
       </div>
-      <div class="output" id="output">等待测试...</div>
-      <div class="output hidden" id="details">说明：这个页面是静态 HTML，但仍然可以包含 CSS、JavaScript、搜索、筛选、折叠、图表等前端交互。</div>
+    </section>
+
+    <section id="deploy">
+      <h2>六、连接方式</h2>
+      <div class="steps">
+        <div class="step"><strong>本地启动 MCP Server。</strong>先在 Windows 本机跑起来，确认工具可以列项目、读文件、取 git diff。</div>
+        <div class="step"><strong>用 Cloudflare Tunnel 暴露 HTTPS。</strong>第一版建议走 Tunnel，省掉证书和公网配置问题。</div>
+        <div class="step"><strong>后续再换 IPv6 + Caddy。</strong>你已经有公网 IPv6 和 DDNS，稳定后可以用 Caddy 做 HTTPS 反代。</div>
+        <div class="step"><strong>在 ChatGPT 里连接自定义 MCP。</strong>开启 Developer mode，创建 connector，填入 MCP endpoint。</div>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <h2>七、阶段路线</h2>
+      <table>
+        <thead><tr><th>阶段</th><th>目标</th><th>是否允许写源码</th></tr></thead>
+        <tbody>
+          <tr><td>Phase 1</td><td>本地 MCP 只读网关：项目列表、目录树、读文件、搜索、git status、git diff</td><td>否</td></tr>
+          <tr><td>Phase 2</td><td>安全命令执行：只跑 typecheck、test、lint、build 等白名单命令</td><td>否</td></tr>
+          <tr><td>Phase 3</td><td>生成 patch / evidence：输出补丁、测试日志、审计报告</td><td>否</td></tr>
+          <tr><td>Phase 4</td><td>受控写入 <code>_phase_outputs</code>、<code>reports</code>、<code>generated</code></td><td>不写业务源码</td></tr>
+          <tr><td>Phase 5</td><td>源码 patch 应用，但必须人工确认，不能自动 push</td><td>有限允许</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="usage">
+      <h2>八、跑通后的使用方式</h2>
+      <p>你以后可以直接这样提需求：</p>
+      <pre>检查 D:/WX_MST 当前原型有没有范围漂移。
+请读取 scope 文档、查看页面结构、检查 git diff，最后输出 PASS / NEEDS_FIX / OUT_OF_SCOPE。</pre>
+      <p>理想执行链路：</p>
+      <pre>1. ChatGPT 调 list_projects 确认项目
+2. 调 get_project_tree 看页面结构
+3. 调 read_file 读取 scope / 关键页面
+4. 调 git_status / git_diff 看变更
+5. 调 run_safe_command 跑测试或类型检查
+6. 输出裁决和下一步建议</pre>
+      <div class="callout">这套模式的本质是：<strong>私有代码留在本地，ChatGPT 通过受控 MCP 工具拿证据，不靠猜。</strong></div>
+    </section>
+
+    <section id="summary">
+      <h2>九、最终收敛</h2>
+      <div class="grid">
+        <div class="card full">
+          <h3>最值得做的不是继续找更多 App，而是自建一个适合你的本地项目网关。</h3>
+          <p>GitHub 是公开远程工作台；Codex/OpenCode 是本地代码执行器；自定义 MCP 是把 ChatGPT 安全接进你私有项目的桥。</p>
+          <pre>ChatGPT + 本地 MCP + 私有仓库 + Codex/OpenCode</pre>
+          <p>这条线一旦跑通，比“把生产代码放公有 GitHub 让我写”更安全，也更接近你想要的项目控制台形态。</p>
+        </div>
+      </div>
     </section>
   </main>
 
-  <script>
-    document.getElementById('testBtn').addEventListener('click', function () {
-      const now = new Date().toLocaleString('zh-CN');
-      document.getElementById('output').textContent = 'PASS: GitHub Pages 单文件 HTML 已正常运行。测试时间：' + now;
-    });
-    document.getElementById('toggleBtn').addEventListener('click', function () {
-      document.getElementById('details').classList.toggle('hidden');
-    });
-  </script>
+  <footer class="wrap">
+    <p>更新路径：docs/index.html · 仓库：HisenWeb/html-preview · 内容：ChatGPT 自定义 MCP / 本地私有项目网关方案</p>
+  </footer>
 </body>
 </html>
